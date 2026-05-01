@@ -2,10 +2,8 @@ package gdg.hongik.mission.Controller;
 
 import gdg.hongik.mission.Product;
 import gdg.hongik.mission.ProductStore;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/products")
@@ -20,7 +18,7 @@ public class ProductUserController {
             }
         }
 
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다.");
+        throw new RuntimeException("해당 상품을 찾을 수 없습니다.");
     }
 
     // 소비자: 상품 구매
@@ -29,7 +27,7 @@ public class ProductUserController {
         Product product = findProductById(productId);
 
         if (product.getStockQuantity() <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "재고가 부족합니다.");
+            throw new RuntimeException("재고가 부족합니다.");
         }
 
         product.setStockQuantity(product.getStockQuantity() - 1);
@@ -44,6 +42,6 @@ public class ProductUserController {
             }
         }
 
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다.");
+        throw new RuntimeException("해당 상품을 찾을 수 없습니다.");
     }
 }

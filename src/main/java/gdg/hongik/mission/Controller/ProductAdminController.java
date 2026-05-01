@@ -5,7 +5,6 @@ import gdg.hongik.mission.ProductStore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/admin/products")
@@ -29,7 +28,7 @@ public class ProductAdminController {
         Product product = findProductById(productId);
 
         if (quantity <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "추가할 재고 수량은 1개 이상이어야 합니다.");
+            throw new RuntimeException("추가할 재고 수량은 1개 이상이어야 합니다.");
         }
 
         product.setStockQuantity(product.getStockQuantity() + quantity);
@@ -54,6 +53,6 @@ public class ProductAdminController {
             }
         }
 
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다.");
+        throw new RuntimeException("해당 상품을 찾을 수 없습니다.");
     }
 }
