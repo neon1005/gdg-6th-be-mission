@@ -33,17 +33,16 @@ public class ProductAdminController {
     }
 
     // 관리자: 재고 추가
-    // 여기서 requestProduct의 stockQuantity는 "추가할 수량"으로 해석한다.
+    // 특정 상품 ID에 해당하는 상품의 재고를 추가한다.
+    // URL의 {productId}로 상품을 찾고,
+    // RequestBody의 숫자를 추가할 재고 수량으로 사용한다.
     //
     // 요청 예시:
-    // {
-    //   "id": 1,
-    //   "stockQuantity": 5
-    // }
-    @PatchMapping("/stock")
-    public ResponseEntity<Product> addStock(@RequestBody Product requestProduct) {
-        Product product = findProductById(requestProduct.getId());
-        int quantity = requestProduct.getStockQuantity();
+    // PATCH /product-admins/1
+    // Body: 5
+    @PatchMapping("/{productId}")
+    public ResponseEntity<Product> addStock(@PathVariable Long productId, @RequestBody int quantity) {
+        Product product = findProductById(productId);
 
         if (quantity <= 0) {
             throw new RuntimeException("추가할 재고 수량은 1개 이상이어야 합니다.");

@@ -31,13 +31,13 @@ public class ProductUserController {
     // 소비자: 상품 구매
     // 여기서 requestProduct의 stockQuantity는 "현재 재고"가 아니라 "구매 수량"으로 해석
     // 요청 예시:
-    // [
+    //
     //   {
     //     "id": 1,
     //     "stockQuantity": 2
     //   }
-    // ]
-    @PostMapping
+    //
+    @PatchMapping
     public ResponseEntity<List<Product>> purchaseProduct(@RequestBody List<Product> requestProducts) {
         List<Product> purchasedProducts = new ArrayList<>(); // 구입한 상품 정보 저장
 
