@@ -10,6 +10,6 @@ public class Product {
     private Long id;
     private String name;
     private double price;
-    private int stockQuantity;
+    private int stockQuantity; //get,setStockQuantity 대문자S로 자동 변환, 자바 빈즈 네이밍 규칙
 
 }

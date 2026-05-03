@@ -19,7 +19,7 @@ public class ProductUserController {
     // 예시: GET /products-user?name=콜라
     @GetMapping
     public ResponseEntity<Product> getProduct(@RequestParam String name) { //상품명을 받아 조회
-        for (Product product : ProductStore.products) {
+        for (Product product : ProductStore.products) { // 저장소에서 하나씩 꺼내면서 비교
             if (product.getName().equals(name)) {
                 return ResponseEntity.ok(product);
             }
@@ -41,10 +41,10 @@ public class ProductUserController {
     public ResponseEntity<List<Product>> purchaseProduct(@RequestBody List<Product> requestProducts) {
         List<Product> purchasedProducts = new ArrayList<>(); // 구입한 상품 정보 저장
 
-        for (Product requestProduct : requestProducts) {
+        for (Product requestProduct : requestProducts) { // 구입한 상품리스트에서 하나씩 꺼내서
             Product product = findProductById(requestProduct.getId());
 
-            int requestQuantity = requestProduct.getStockQuantity();
+            int requestQuantity = requestProduct.getStockQuantity();// 상품당 구매 수량
 
             if (requestQuantity <= 0) {
                 throw new RuntimeException("구매 수량은 1개 이상이어야 합니다.");
@@ -56,14 +56,12 @@ public class ProductUserController {
             product.setStockQuantity(product.getStockQuantity() - requestQuantity); //구매 수량만큼 감소
 
             Product purchasedProduct = new Product();
+
             purchasedProduct.setId(product.getId());
             purchasedProduct.setName(product.getName());
-
-            // 추가 class 없이 처리하기 위해 price에는 "해당 상품 소비 금액"을 넣는다.
             purchasedProduct.setPrice(product.getPrice() * requestQuantity); //구입한 상품의 총 금액 계산
-
-            // 추가 class 없이 처리하기 위해 stockQuantity에는 "구매 수량"을 넣는다.
             purchasedProduct.setStockQuantity(requestQuantity);
+
             purchasedProducts.add(purchasedProduct);
         }
 
