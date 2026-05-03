@@ -5,13 +5,20 @@ import gdg.hongik.mission.ProductStore;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
-@RequestMapping("/products")
+// 이 클래스가 REST API 요청을 처리하는 Controller이다.
+// 각 메서드의 반환값은 HTML 화면이 아니라 JSON 응답 데이터로 반환
+@RequestMapping("/products-user") // 이 Controller의 기본 URL 경로를 /products-user로 설정
 public class ProductUserController {
 
     // 소비자: 상품명으로 상품 조회
+    //GET 요청으로 쿼리 파라미터로 상품명을 받는다.
+    // 예시: GET /products-user?name=콜라
     @GetMapping
-    public ResponseEntity<Product> getProduct(@RequestParam String name) {
+    public ResponseEntity<Product> getProduct(@RequestParam String name) { //상품명을 받아 조회
         for (Product product : ProductStore.products) {
             if (product.getName().equals(name)) {
                 return ResponseEntity.ok(product);
@@ -22,17 +29,45 @@ public class ProductUserController {
     }
 
     // 소비자: 상품 구매
-    @PostMapping("/{productId}/purchase")
-    public ResponseEntity<Product> purchaseProduct(@PathVariable Long productId) {
-        Product product = findProductById(productId);
+    // 여기서 requestProduct의 stockQuantity는 "현재 재고"가 아니라 "구매 수량"으로 해석
+    // 요청 예시:
+    // [
+    //   {
+    //     "id": 1,
+    //     "stockQuantity": 2
+    //   }
+    // ]
+    @PostMapping
+    public ResponseEntity<List<Product>> purchaseProduct(@RequestBody List<Product> requestProducts) {
+        List<Product> purchasedProducts = new ArrayList<>(); // 구입한 상품 정보 저장
 
-        if (product.getStockQuantity() <= 0) {
-            throw new RuntimeException("재고가 부족합니다.");
+        for (Product requestProduct : requestProducts) {
+            Product product = findProductById(requestProduct.getId());
+
+            int requestQuantity = requestProduct.getStockQuantity();
+
+            if (requestQuantity <= 0) {
+                throw new RuntimeException("구매 수량은 1개 이상이어야 합니다.");
+            }
+            if (product.getStockQuantity() < requestQuantity) {
+                throw new RuntimeException("재고가 부족합니다.");
+            }
+            
+            product.setStockQuantity(product.getStockQuantity() - requestQuantity); //구매 수량만큼 감소
+
+            Product purchasedProduct = new Product();
+            purchasedProduct.setId(product.getId());
+            purchasedProduct.setName(product.getName());
+
+            // 추가 class 없이 처리하기 위해 price에는 "해당 상품 소비 금액"을 넣는다.
+            purchasedProduct.setPrice(product.getPrice() * requestQuantity); //구입한 상품의 총 금액 계산
+
+            // 추가 class 없이 처리하기 위해 stockQuantity에는 "구매 수량"을 넣는다.
+            purchasedProduct.setStockQuantity(requestQuantity);
+            purchasedProducts.add(purchasedProduct);
         }
 
-        product.setStockQuantity(product.getStockQuantity() - 1);
-
-        return ResponseEntity.ok(product);
+        return ResponseEntity.ok(purchasedProducts);
     }
 
     private Product findProductById(Long productId) {
