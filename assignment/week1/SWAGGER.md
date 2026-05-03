@@ -1,1 +1,6 @@
 ![Swagger 화면](postman&swagger_Images/swagger.png)
+![POSTMAN 화면](postman&swagger_Images/admin-post.png)
+![POSTMAN 화면](postman&swagger_Images/admin-patch.png)
+![POSTMAN 화면](postman&swagger_Images/admin-delete.png)
+![POSTMAN 화면](postman&swagger_Images/user-get.png)
+![POSTMAN 화면](postman&swagger_Images/user-patch.png)
