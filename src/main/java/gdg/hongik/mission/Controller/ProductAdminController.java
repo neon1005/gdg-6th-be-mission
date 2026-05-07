@@ -1,7 +1,6 @@
 package gdg.hongik.mission.Controller;
 
-import gdg.hongik.mission.Product;
-import gdg.hongik.mission.ProductStore;
+import gdg.hongik.mission.Entity.Product;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +9,7 @@ import java.util.List;
 
 //UserController에서 어노테이션 설명
 @RestController
-@RequestMapping("/products-admin")
+@RequestMapping("/admin/prsoducts")
 public class ProductAdminController {
 
     // 관리자: 상품 등록
@@ -22,13 +21,13 @@ public class ProductAdminController {
     // }
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        for (Product savedProduct : ProductStore.products) {
+        for (Product savedProduct : ProductStore_delete.products) {
             if (savedProduct.getName().equals(product.getName())) {
                 throw new RuntimeException("이미 존재하는 상품명입니다.");
             }
         }
-        product.setId(ProductStore.sequence++); //상품 등록시 값 증가
-        ProductStore.products.add(product); // 상품 저장소에 등록
+        product.setId(ProductStore_delete.sequence++); //상품 등록시 값 증가
+        ProductStore_delete.products.add(product); // 상품 저장소에 등록
 
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
@@ -49,7 +48,7 @@ public class ProductAdminController {
             throw new RuntimeException("추가할 재고 수량은 1개 이상이어야 합니다.");
         }
 
-        product.setStockQuantity(product.getStockQuantity() + quantity); //재고 추가
+        product.setQuantity(product.getQuantity() + quantity); //재고 추가
 
         return ResponseEntity.ok(product);
     }
@@ -69,14 +68,14 @@ public class ProductAdminController {
     public ResponseEntity<List<Product>>  deleteProduct(@RequestBody List<Product> requestProducts) {
         for (Product requestProduct : requestProducts) { // 삭제 대상 상품들을 하나씩 꺼내서
             Product product = findProductById(requestProduct.getId()); // 대상 상품의 id로 실제 저장되어있는 상품찾음
-            ProductStore.products.remove(product); //그 상품 객체를 제거한다
+            ProductStore_delete.products.remove(product); //그 상품 객체를 제거한다
         }
 
-        return ResponseEntity.ok(ProductStore.products);//현재 남아 있는 전체 상품 목록을 200ok 상태로 응답
+        return ResponseEntity.ok(ProductStore_delete.products);//현재 남아 있는 전체 상품 목록을 200ok 상태로 응답
     }
 
     private Product findProductById(Long productId) {
-        for (Product product : ProductStore.products) {
+        for (Product product : ProductStore_delete.products) {
             if (product.getId().equals(productId)) {
                 return product;
             }

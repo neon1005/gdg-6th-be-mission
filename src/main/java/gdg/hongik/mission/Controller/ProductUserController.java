@@ -1,7 +1,6 @@
 package gdg.hongik.mission.Controller;
 
-import gdg.hongik.mission.Product;
-import gdg.hongik.mission.ProductStore;
+import gdg.hongik.mission.Entity.Product;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +10,7 @@ import java.util.List;
 @RestController
 // 이 클래스가 REST API 요청을 처리하는 Controller이다.
 // 각 메서드의 반환값은 HTML 화면이 아니라 JSON 응답 데이터로 반환
-@RequestMapping("/products-user") // 이 Controller의 기본 URL 경로를 /products-user로 설정
+@RequestMapping("/user/products") // 이 Controller의 기본 URL 경로를 /products-user로 설정
 public class ProductUserController {
 
     // 소비자: 상품명으로 상품 조회
@@ -19,7 +18,7 @@ public class ProductUserController {
     // 예시: GET /products-user?name=콜라
     @GetMapping
     public ResponseEntity<Product> getProduct(@RequestParam String name) { //상품명을 받아 조회
-        for (Product product : ProductStore.products) { // 저장소에서 하나씩 꺼내면서 비교
+        for (Product product : ProductStore_delete.products) { // 저장소에서 하나씩 꺼내면서 비교
             if (product.getName().equals(name)) {
                 return ResponseEntity.ok(product);
             }
@@ -44,23 +43,23 @@ public class ProductUserController {
         for (Product requestProduct : requestProducts) { // 구입한 상품리스트에서 하나씩 꺼내서
             Product product = findProductById(requestProduct.getId());
 
-            int requestQuantity = requestProduct.getStockQuantity();// 상품당 구매 수량
+            int requestQuantity = requestProduct.getQuantity();// 상품당 구매 수량
 
             if (requestQuantity <= 0) {
                 throw new RuntimeException("구매 수량은 1개 이상이어야 합니다.");
             }
-            if (product.getStockQuantity() < requestQuantity) {
+            if (product.getQuantity() < requestQuantity) {
                 throw new RuntimeException("재고가 부족합니다.");
             }
             
-            product.setStockQuantity(product.getStockQuantity() - requestQuantity); //구매 수량만큼 감소
+            product.setQuantity(product.getQuantity() - requestQuantity); //구매 수량만큼 감소
 
             Product purchasedProduct = new Product();
 
             purchasedProduct.setId(product.getId());
             purchasedProduct.setName(product.getName());
             purchasedProduct.setPrice(product.getPrice() * requestQuantity); //구입한 상품의 총 금액 계산
-            purchasedProduct.setStockQuantity(requestQuantity);
+            purchasedProduct.setQuantity(requestQuantity);
 
             purchasedProducts.add(purchasedProduct);
         }
@@ -69,7 +68,7 @@ public class ProductUserController {
     }
 
     private Product findProductById(Long productId) {
-        for (Product product : ProductStore.products) {
+        for (Product product : ProductStore_delete.products) {
             if (product.getId().equals(productId)) {
                 return product;
             }
