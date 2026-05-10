@@ -15,8 +15,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id //이 필드가 테이블의 기본키, DB 테이블에서 각 상품을 구분하기 위한 고유 번호
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // 그 기본기 값을 자동으로 생성
     private Long id;
 
     private String name;

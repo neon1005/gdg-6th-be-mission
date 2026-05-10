@@ -14,16 +14,15 @@ import java.util.List;
 
 //UserController에서 어노테이션 설명
 @RestController
-@RequestMapping("/admin/prsoducts")
+@RequestMapping("/admin/products")
 @RequiredArgsConstructor
 public class ProductAdminController {
-
-    private final ProductUserService productUserService;
+    
     @Getter
     @Setter
     static class AddStockRequest {
         private int addQuantity;
-    }
+    } // 재고 추가용
 
     private final ProductAdminService productAdminService;
 
@@ -32,7 +31,7 @@ public class ProductAdminController {
     // {
     //   "name": "콜라",
     //   "price": 1500,
-    //   "stockQuantity": 10
+    //   "quantity": 10
     // }
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
@@ -47,8 +46,10 @@ public class ProductAdminController {
     // RequestBody의 숫자를 추가할 재고 수량으로 사용한다.
     //
     // 요청 예시:
-    // PATCH /product-admins/1
-    // Body: 5
+    // PATCH /admin/products/1
+    //{
+    //  "addQuantity": 5
+    //}
     @PatchMapping("/{productId}")
     public ResponseEntity<Product> addStock(@PathVariable Long productId, @RequestBody AddStockRequest request) {
         Product product = productAdminService.addStock(productId, request.getAddQuantity());
@@ -68,10 +69,12 @@ public class ProductAdminController {
     // ]
     //여러 상품을 한번에 삭제하기 위해 삭제할 상품 정보를 List<Product> 형태로 받는다.
     @DeleteMapping
-    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
-        productAdminService.deleteProduct(productId);
+    public ResponseEntity<String> deleteProduct(@RequestBody List<Product> requestProducts) {
+        for (Product requestProduct : requestProducts) {
+            productAdminService.deleteProduct(requestProduct.getId());
+        }
 
-        return ResponseEntity.ok("상품이 삭제되었습니다.");
+        return ResponseEntity.ok("상품들이 삭제되었습니다.");
     }
 
 }

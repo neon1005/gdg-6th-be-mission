@@ -5,8 +5,6 @@ import gdg.hongik.mission.Service.ProductUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -33,18 +31,15 @@ public class ProductUserController {
     // 소비자: 상품 구매
     // 여기서 requestProduct의 quantity는 "현재 재고"가 아니라 "구매 수량"으로 해석
     // 요청 예시:
-    //
+    //[
     //   {
     //     "id": 1,
     //     "quantity": 2
     //   }
-    //
+    //]
     @PostMapping
-    public ResponseEntity<List<Product>> purchaseProduct(
-            @RequestBody List<Product> requestProducts
-    ) {
-        List<Product> purchasedProducts =
-                productUserService.purchaseProducts(requestProducts);
+    public ResponseEntity<List<Product>> purchaseProduct(@RequestBody List<Product> requestProducts) {
+        List<Product> purchasedProducts = productUserService.purchaseProducts(requestProducts);
 
         return ResponseEntity.ok(purchasedProducts);
     }
