@@ -5,7 +5,7 @@ import gdg.hongik.mission.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.List; //사용되지 않음
 
 @Service
 @RequiredArgsConstructor //final 필드를 매개변수로 받는 생성자를 lombok이 자동으로 만들어준다
@@ -23,12 +23,14 @@ public class ProductAdminService {
 
         return product;
     }
-
+    /*
+    // 사용되지 않음
     // 관리자: 전체 상품 조회
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
-
+    
+    // 사용되지 않음
     // 관리자: 상품 ID로 상품 조회
     public Product getProductById(Long id) {
         Product product = productRepository.findById(id);
@@ -39,6 +41,10 @@ public class ProductAdminService {
 
         return product;
     }
+    */
+
+
+
 
     // 관리자: 재고 추가
     public Product addStock(Long id, int quantity) {
