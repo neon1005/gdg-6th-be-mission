@@ -13,28 +13,25 @@ import java.util.List;
 public class ProductAdminService {
     private final ProductRepository productRepository;
 
-    public Long createProduct(Product product) {
+    // 관리자: 상품 등록
+    public Product createProduct(Product product) {
+        Product existingProduct = productRepository.findByName(product.getName());
 
-        Product existingMember = productRepository.findById(product.getId);
-        if (existingMember == null) {
-                throw new RuntimeException("Member not found"+ request.getId);
+        if (existingProduct != null) {
+            throw new RuntimeException("이미 존재하는 상품명입니다.");
         }
 
-        /*Product product = new Product(
-                request.getProductId(),
-                request.getName(),
-                request.getPrice(),
-                request.getStockQty()
-        ); */
         productRepository.save(product);
-        return product.getId();
 
+        return product;
     }
 
+    // 관리자: 전체 상품 조회
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
+    // 관리자: 상품 ID로 상품 조회
     public Product getProductById(Long id) {
         Product product = productRepository.findById(id);
 
@@ -43,27 +40,33 @@ public class ProductAdminService {
         }
 
         return product;
-
     }
 
-    public void updateProduct(Long id, ProductUpdateRequest request) {
+    // 관리자: 재고 추가
+    public Product addStock(Long id, int quantity) {
         Product product = productRepository.findById(id);
+
         if (product == null) {
             throw new RuntimeException("해당 상품을 찾을 수 없습니다.");
         }
 
+        if (quantity <= 0) {
+            throw new RuntimeException("추가할 재고 수량은 1개 이상이어야 합니다.");
+        }
 
-        product.updateInfo(request.getName(), request.getPrice(), request.getStockQty());
+        product.setQuantity(product.getQuantity() + quantity);
+
+        return product;
     }
 
-
+    // 관리자: 상품 삭제
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id);
+
         if (product == null) {
             throw new RuntimeException("해당 상품을 찾을 수 없습니다.");
         }
 
         productRepository.deleteById(id);
-
     }
 }
