@@ -31,7 +31,7 @@ public class ProductAdminController {
     //   "name": "콜라",
     //   "price": 1500,
     //   "quantity": 10
-    // }
+    // }  --> 트랜잭선 없어서인지 에러 발생 ..
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         Product savedProduct = productAdminService.createProduct(product);
@@ -48,7 +48,7 @@ public class ProductAdminController {
     // PATCH /admin/products/1
     //{
     //  "addQuantity": 5
-    //} --> 트랜잭선 없어서인지 에러 발생 ..
+    //}
     @PatchMapping("/{productId}")
     public ResponseEntity<Product> addStock(@PathVariable Long productId, @RequestBody AddStockRequest request) {
         Product product = productAdminService.addStock(productId, request.getAddQuantity());
