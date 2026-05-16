@@ -1,5 +1,9 @@
 package gdg.hongik.mission.Controller;
 
+import gdg.hongik.mission.DTO.AddStockRequest;
+import gdg.hongik.mission.DTO.ProductCreateRequest;
+import gdg.hongik.mission.DTO.ProductDeleteRequest;
+import gdg.hongik.mission.DTO.ProductResponse;
 import gdg.hongik.mission.Entity.Product;
 import gdg.hongik.mission.Service.ProductAdminService;
 import lombok.Getter;
@@ -16,27 +20,29 @@ import java.util.List;
 @RequestMapping("/admin/products")
 @RequiredArgsConstructor
 public class ProductAdminController {
-    
-    @Getter
-    @Setter
-    static class AddStockRequest {
-        private int addQuantity;
-    } // 재고 추가용
+
 
     private final ProductAdminService productAdminService;
 
     // 관리자: 상품 등록
     // 요청 예시:
     // {
-    //   "name": "콜라",
-    //   "price": 1500,
+    //   "name": "얼박사",
+    //   "price": 3500,
     //   "quantity": 10
-    // }  --> 트랜잭선 없어서인지 에러 발생 ..
+    // }
+    // 응답 예시:
+    //{
+    //    "id": 1,
+    //    "name": "얼박사",
+    //    "price": 3500.0,
+    //    "quantity": 10
+    //}
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product savedProduct = productAdminService.createProduct(product);
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductCreateRequest request) {
+        Product savedProduct = productAdminService.createProduct(request.toEntity());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponse(savedProduct));
     }
 
     // 관리자: 재고 추가
@@ -49,11 +55,18 @@ public class ProductAdminController {
     //{
     //  "addQuantity": 5
     //}
+    // 응답 예시:
+    //{
+    //    "id": 1,
+    //    "name": "얼박사",
+    //    "price": 3500.0,
+    //    "quantity": 15
+    //}
     @PatchMapping("/{productId}")
-    public ResponseEntity<Product> addStock(@PathVariable Long productId, @RequestBody AddStockRequest request) {
+    public ResponseEntity<ProductResponse> addStock(@PathVariable Long productId, @RequestBody AddStockRequest request) {
         Product product = productAdminService.addStock(productId, request.getAddQuantity());
 
-        return ResponseEntity.ok(product);
+        return ResponseEntity.ok(new ProductResponse(product));
     }
 
     // 관리자: 상품 삭제
@@ -66,10 +79,11 @@ public class ProductAdminController {
     //     "id": 2
     //   }
     // ]
+    // 응답 예시: 상품들이 삭제되었습니다.
     //여러 상품을 한번에 삭제하기 위해 삭제할 상품 정보를 List<Product> 형태로 받는다.
     @DeleteMapping
-    public ResponseEntity<String> deleteProduct(@RequestBody List<Product> requestProducts) {
-        for (Product requestProduct : requestProducts) {
+    public ResponseEntity<String> deleteProduct(@RequestBody List<ProductDeleteRequest> requestProducts) {
+        for (ProductDeleteRequest requestProduct : requestProducts) {
             productAdminService.deleteProduct(requestProduct.getId());
         }
 

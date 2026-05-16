@@ -19,14 +19,6 @@ public class ProductRepository {
     // 상품 id로 상품 1개 조회
     public Product findById(Long id) { return em.find(Product.class, id); }
 
-    /*
-    // 사용되지 않음
-    // 상품 전체 조회
-    public List<Product> findAll() {
-        return em.createQuery("SELECT p FROM Product p", Product.class).getResultList();
-    }
-    */
-
 
     // 상품명으로 상품 1개 조회
     public Product findByName(String name) {

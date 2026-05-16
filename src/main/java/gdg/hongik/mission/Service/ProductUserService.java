@@ -1,9 +1,12 @@
 package gdg.hongik.mission.Service;
 
+import gdg.hongik.mission.DTO.PurchaseProductRequest;
+import gdg.hongik.mission.DTO.PurchaseProductResponse;
 import gdg.hongik.mission.Entity.Product;
 import gdg.hongik.mission.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +17,7 @@ public class ProductUserService {
     private final ProductRepository productRepository;
 
     // 소비자: 상품명으로 상품 조회
+    @Transactional(readOnly = true)
     public Product getProductByName(String name) {
         Product product = productRepository.findByName(name);
 
@@ -25,10 +29,11 @@ public class ProductUserService {
     }
 
     // 소비자: 상품 구매
-    public List<Product> purchaseProducts(List<Product> requestProducts) {
-        List<Product> purchasedProducts = new ArrayList<>();
+    @Transactional
+    public List<PurchaseProductResponse> purchaseProducts(List<PurchaseProductRequest> requestProducts) {
+        List<PurchaseProductResponse> purchasedProducts = new ArrayList<>();
 
-        for (Product requestProduct : requestProducts) {
+        for (PurchaseProductRequest requestProduct : requestProducts) {
             Product product = productRepository.findById(requestProduct.getId());
 
             if (product == null) {
@@ -47,17 +52,15 @@ public class ProductUserService {
 
             product.setQuantity(product.getQuantity() - requestQuantity);
 
-            Product purchasedProduct = new Product();
-            purchasedProduct.setId(product.getId());
-            purchasedProduct.setName(product.getName());
-
-            // price에는 "해당 상품의 총 구매 금액"을 담는다.
-            purchasedProduct.setPrice(product.getPrice() * requestQuantity);
-
-            // quantity에는 "구매 수량"을 담는다.
-            purchasedProduct.setQuantity(requestQuantity);
+            PurchaseProductResponse purchasedProduct = new PurchaseProductResponse(
+                    product.getId(),
+                    product.getName(),
+                    product.getPrice() * requestQuantity,
+                    requestQuantity
+            );
 
             purchasedProducts.add(purchasedProduct);
+
         }
 
         return purchasedProducts;

@@ -4,6 +4,7 @@ import gdg.hongik.mission.Entity.Product;
 import gdg.hongik.mission.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List; //사용되지 않음
 
@@ -12,6 +13,7 @@ import java.util.List; //사용되지 않음
 public class ProductAdminService {
     private final ProductRepository productRepository; //생성자 주입, @RequiredArgsConstructor 해도 필수 선언
 
+    @Transactional
     public Product createProduct(Product product) {
         Product existingProduct = productRepository.findByName(product.getName());
 
@@ -23,30 +25,10 @@ public class ProductAdminService {
 
         return product;
     }
-    /*
-    // 사용되지 않음
-    // 관리자: 전체 상품 조회
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
-    }
-    
-    // 사용되지 않음
-    // 관리자: 상품 ID로 상품 조회
-    public Product getProductById(Long id) {
-        Product product = productRepository.findById(id);
-
-        if (product == null) {
-            throw new RuntimeException("해당 상품을 찾을 수 없습니다.");
-        }
-
-        return product;
-    }
-    */
-
-
 
 
     // 관리자: 재고 추가
+    @Transactional
     public Product addStock(Long id, int quantity) {
         Product product = productRepository.findById(id);
 
@@ -64,6 +46,7 @@ public class ProductAdminService {
     }
 
     // 관리자: 상품 삭제
+    @Transactional
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id);
 
